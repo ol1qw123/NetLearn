@@ -1,9 +1,21 @@
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio::io::{AsyncReadExt, AsyncWriteExt, AsyncBufReadExt};
 
 pub async fn start() -> Result<() , Box<dyn std::error::Error>> {
+    println!("Enter the address and the port as in (192.168.1.1:6666)");
+
+    let mut buffer_for_addr = String::new();
+
+    
+    let mut reader = tokio::io::BufReader::new(tokio::io::stdin());
+
+    
+    reader.read_line(&mut buffer_for_addr).await?;
+
+    
+    let address = buffer_for_addr.trim();
     let tcp_accpetor =
-        tokio::net::TcpListener::bind("192.168.1.14:4444").await?;
-    println!("It's listening for connections in 192.168.1.14:4444.");
+        tokio::net::TcpListener::bind(address).await?;
+    println!("It's listening for connections in {}." , address);
     loop {
         let (mut socket , addr) = tcp_accpetor.accept().await?;
         println!("Connection received from {}", addr);
